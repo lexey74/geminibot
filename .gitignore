@@ -1,0 +1,28 @@
+# Ignore the nohup output file
+nohup.out
+
+# Ignore environment variable files
+*.env
+
+# Ignore keys files and temporary files
+*.json
+
+# Ignore system-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore Python bytecode files
+__pycache__/
+*.py[cod]
+
+# Ignore virtual environment directories
+venv/
+myenv/
+ENV/
+env/
+.venv/
+
+# Ignore log files and temporary files
+*.log
+*.tmp
+*.swp
