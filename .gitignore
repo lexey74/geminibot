@@ -26,3 +26,6 @@ env/
 *.log
 *.tmp
 *.swp
+
+# Ignore text files
+*.txt

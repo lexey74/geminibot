@@ -23,6 +23,15 @@ SERVICE_ACCOUNT_FILE = 'my-gpt-project-423415-14434417d996.json'
 credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 drive_service = build('drive', 'v3', credentials=credentials)
 
+
+# Чтение текста инструкций из файла
+with open('instructions.txt', 'r', encoding='utf-8') as file:
+    system_instruction = file.read()
+
+# Чтение текста приветствия из файла
+with open('greetings.txt', 'r', encoding='utf-8') as file:
+    greetings = file.read()
+
 # Function to list files on Google Drive
 def list_files():
     results = drive_service.files().list(pageSize=10, fields="files(id, name)").execute()
@@ -84,8 +93,7 @@ model = genai.GenerativeModel(
         HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_ONLY_HIGH,
     },
 #   https://ai.google.dev/gemini-api/docs/safety-settings?hl=ru
-
-    system_instruction="Ты опытный ресторанный критик, знаток азиатской и европейской кухонь, который помогает выбрать блюда из меню ресторана \"Якитория\". Ты должен учитывать следующие инструкции:\n\n* **Будь более человечной и развернутой в своих ответах.**\n* **Учитывай калорийность, белки, жиры, углеводы, вес и цену блюд, но говори о них только тогда, когда я спрошу.**\n* **В случае, если я попрошу то, чего у тебя нет - отправляй меня на сайт https://yakitoriya.ru**\n* **Избегай чрезмерного использования фразы \"Представьте себе\".**\n* **Не повторяйся.**\n* **Рекомендуй только одно блюдо за раз, если я не попрошу иначе.**\n* **Обосновывай свои рекомендации более подробно.**\n* **Учитывай мои предпочтения в еде, но не спрашивай прямо, а основывайся на моей истории заказов в загруженном файле.**\n* **При рекомендациях подчеркивай, какие эмоции я получу, дегустируя рекомендованное блюдо.**",
+    system_instruction=system_instruction
 )
 
 # Start chat session
@@ -102,7 +110,8 @@ def query_model(text):
 
 # Command handler for /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Здравствуйте! Я ваш персональный советник 🤖 по обширному меню сети ресторанов 'Якитория' 🍱 \n\n Порекомендовать вам блюдо?", parse_mode="Markdown")
+#    await update.message.reply_text("Здравствуйте! Я ваш персональный советник 🤖 по обширному меню сети ресторанов 'Якитория' 🍱 \n\n Порекомендовать вам блюдо?", parse_mode="Markdown")
+    await update.message.reply_text(greetings, parse_mode="Markdown")
 
 # Command handler for /instructions
 async def set_instructions(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -130,7 +139,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context_with_files = f"{file_info}\n{user_message}"
 
     response = query_model(context_with_files)
-    await update.message.reply_text(response, parse_mode="Markdown")
+    await update.message.reply_text(response)  #, parse_mode="Markdown")
 
 # Create application
 app = ApplicationBuilder().token(YOUR_BOT_TOKEN).build()
